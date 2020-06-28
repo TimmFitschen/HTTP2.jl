@@ -8,26 +8,26 @@ import HTTP2.Frame: ContinuationFrame, DataFrame, GoawayFrame, HeadersFrame, Pin
 
 @enum STREAM_STATE IDLE=1 RESERVED_LOCAL=2 RESERVED_REMOTE=3 OPEN=4 HALF_CLOSED_REMOTE=5 HALF_CLOSED_LOCAL=6 CLOSED=7
 
-type Priority
+mutable struct Priority
     dependent_stream_identifier::UInt32
     weight::UInt8
 end
 
 ## Actions, which should be feeded in to `in` channel.
 
-immutable ActPromise
+struct ActPromise
     stream_identifier::UInt32
     promised_stream_identifier::UInt32
     headers::Headers
 end
 
-immutable ActSendHeaders
+struct ActSendHeaders
     stream_identifier::UInt32
     headers::Headers
     is_end_stream::Bool
 end
 
-immutable ActSendData
+struct ActSendData
     stream_identifier::UInt32
     data::Array{UInt8, 1}
     is_end_stream::Bool
@@ -35,34 +35,34 @@ end
 
 ## Events, which should be fetched from `out` channel.
 
-immutable EvtPromise
+struct EvtPromise
     stream_identifier::UInt32
     promised_stream_identifier::UInt32
     headers::Headers
 end
 
-immutable EvtRecvHeaders
+struct EvtRecvHeaders
     stream_identifier::UInt32
     headers::Headers
     is_end_stream::Bool
 end
 
-immutable EvtRecvData
+struct EvtRecvData
     stream_identifier::UInt32
     data::Array{UInt8, 1}
     is_end_stream::Bool
 end
 
-immutable EvtGoaway end
+struct EvtGoaway end
 
-type HTTPStream
+mutable struct HTTPStream
     stream_identifier::UInt32
     state::STREAM_STATE
     window_size::UInt32
     priority::Nullable{Priority}
 end
 
-type HTTPSettings
+mutable struct HTTPSettings
     push_enabled::Bool
     max_concurrent_streams::Nullable{UInt}
     initial_window_size::UInt
@@ -72,7 +72,7 @@ end
 
 HTTPSettings() = HTTPSettings(true, Nullable(), 65535, 16384, Nullable())
 
-type HTTPConnection
+mutable struct HTTPConnection
     dynamic_table::DynamicTable
     streams::Array{HTTPStream, 1}
     window_size::UInt32

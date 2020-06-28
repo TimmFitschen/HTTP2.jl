@@ -3,7 +3,7 @@ import Base: ==, AbstractIOBuffer
 
 @enum FRAME_TYPES DATA=0x0 HEADERS=0x1 PRIORITY=0x2 RST_STREAM=0x3 SETTINGS=0x4 PUSH_PROMISE=0x5 PING=0x6 GOAWAY=0x7 WINDOW_UPDATE=0x8 CONTINUATION=0x9
 
-immutable FrameHeader
+struct FrameHeader
     length::UInt32
     typ::FRAME_TYPES
     flags::UInt8
@@ -41,7 +41,7 @@ function encode_header(header::FrameHeader)
 end
 
 
-type UnimplementedError <: Exception end
+mutable struct UnimplementedError <: Exception end
 
 include("Frame/utils.jl")
 include("Frame/data.jl")

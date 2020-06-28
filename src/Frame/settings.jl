@@ -1,6 +1,6 @@
 @enum SETTING_IDENTIFIER SETTINGS_HEADER_TABLE_SIZE=0x1 SETTINGS_ENABLE_PUSH=0x2 SETTINGS_MAX_CONCURRENT_STREAMS=0x3 SETTINGS_INITIAL_WINDOW_SIZE=0x4 SETTINGS_MAX_FRAME_SIZE=0x5 SETTINGS_MAX_HEADER_LIST_SIZE=0x6
 
-immutable SettingsFrame
+struct SettingsFrame
     is_ack::Bool
     parameters::Nullable{Array{Tuple{SETTING_IDENTIFIER, UInt32}, 1}}
 end
@@ -11,7 +11,7 @@ SettingsFrame() = SettingsFrame(false, Nullable(Array{Tuple{Frame.SETTING_IDENTI
     a.is_ack == b.is_ack &&
     (isnull(a.parameters) || a.parameters.value == b.parameters.value)
 
-type UnknownIdentifierError <: Exception end
+mutable struct UnknownIdentifierError <: Exception end
 
 function decode_settings(header, payload)
     @assert header.stream_identifier == 0x0

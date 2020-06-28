@@ -1,4 +1,4 @@
-immutable HeadersFrame
+struct HeadersFrame
     is_end_stream::Bool
     is_end_headers::Bool
     is_priority::Bool
