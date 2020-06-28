@@ -2,14 +2,14 @@
 
 struct SettingsFrame
     is_ack::Bool
-    parameters::Nullable{Array{Tuple{SETTING_IDENTIFIER, UInt32}, 1}}
+    parameters::Union{Nothing, Array{Tuple{SETTING_IDENTIFIER, UInt32}, 1}}
 end
 
-SettingsFrame() = SettingsFrame(false, Nullable(Array{Tuple{Frame.SETTING_IDENTIFIER, UInt32}, 1}()))
+SettingsFrame() = SettingsFrame(false,  Array{Tuple{SETTING_IDENTIFIER, UInt32}, 1}())
 
 ==(a::SettingsFrame, b::SettingsFrame) =
     a.is_ack == b.is_ack &&
-    (isnull(a.parameters) || a.parameters.value == b.parameters.value)
+    (isnothing(a.parameters) || a.parameters == b.parameters)
 
 mutable struct UnknownIdentifierError <: Exception end
 
@@ -20,7 +20,7 @@ function decode_settings(header, payload)
 
     if is_ack
         @assert length(payload) == 0
-        return SettingsFrame(is_ack, Nullable{Array{Tuple{SETTING_IDENTIFIER, UInt32}}}())
+        return SettingsFrame(is_ack, nothing)
     else
         parameters = Array{Tuple{SETTING_IDENTIFIER, UInt32}, 1}()
         for i = 1:div(length(payload), 6)
@@ -29,7 +29,7 @@ function decode_settings(header, payload)
                 UInt32(payload[(i-1)*6+5]) << 8 + UInt32(payload[(i-1)*6+6])
             push!(parameters, (SETTING_IDENTIFIER(identifier), value))
         end
-        return SettingsFrame(is_ack, Nullable(parameters))
+        return SettingsFrame(is_ack, parameters)
     end
 end
 
@@ -38,7 +38,7 @@ function encode_settings(frame)
         return wrap_payload([], SETTINGS, 0x1, 0x0)
     else
         payload = Array{UInt8, 1}()
-        for val in frame.parameters.value
+        for val in frame.parameters
             append!(payload, [ UInt8(UInt16(val[1]) >> 8);
                                UInt8(UInt16(val[1]) & 0x00ff);
                                UInt8(val[2] >> 24);

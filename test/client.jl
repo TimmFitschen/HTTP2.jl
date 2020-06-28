@@ -1,6 +1,6 @@
 import HTTP2
 using HTTP2.Frame
-using Base.Test
+using Test
 
 ## Run `nghttpd --verbose --no-tls 9000` to make this test pass
 (headers, body) = HTTP2.request(ip"127.0.0.1", 9000, "/")

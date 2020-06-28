@@ -59,18 +59,18 @@ mutable struct HTTPStream
     stream_identifier::UInt32
     state::STREAM_STATE
     window_size::UInt32
-    priority::Nullable{Priority}
+    priority::Union{Nothing, Priority}
 end
 
 mutable struct HTTPSettings
     push_enabled::Bool
-    max_concurrent_streams::Nullable{UInt}
+    max_concurrent_streams::Union{Nothing, UInt}
     initial_window_size::UInt
     max_frame_size::UInt
-    max_header_list_size::Nullable{UInt}
+    max_header_list_size::Union{Nothing, UInt}
 end
 
-HTTPSettings() = HTTPSettings(true, Nullable(), 65535, 16384, Nullable())
+HTTPSettings() = HTTPSettings(true, nothing, 65535, 16384, nothing)
 
 mutable struct HTTPConnection
     dynamic_table::DynamicTable

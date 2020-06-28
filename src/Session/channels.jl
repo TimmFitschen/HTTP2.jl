@@ -130,7 +130,7 @@ function initialize_raw_loop_async(connection::HTTPConnection, buffer; skip_pref
         end
     end
 
-    put!(channel_act_raw, SettingsFrame(false, Nullable(Array{Tuple{Frame.SETTING_IDENTIFIER, UInt32}, 1}())))
+    put!(channel_act_raw, SettingsFrame(false, Array{Tuple{Frame.SETTING_IDENTIFIER, UInt32}, 1}()))
 end
 
 function process_channel_act(connection::HTTPConnection)
@@ -146,14 +146,14 @@ function process_channel_act(connection::HTTPConnection)
     end
 
     stream = get_stream(connection, act.stream_identifier)
-    if stream.state == IDLE && !isnull(connection.settings.max_concurrent_streams) &&
+    if stream.state == IDLE && !isnothing(connection.settings.max_concurrent_streams) &&
         concurrent_streams_count(connection) > get(connection.settings.max_concurrent_streams)
         put!(channel_act, act)
         return
     end
 
     if typeof(act) == ActSendHeaders
-        if !isnull(connection.settings.max_header_list_size)
+        if !isnothing(connection.settings.max_header_list_size)
             sum = 0
 
             for k in keys(act.headers)
@@ -196,14 +196,14 @@ function process_channel_evt(connection::HTTPConnection)
 
     if typeof(frame) == SettingsFrame
         if !frame.is_ack
-            parameters = frame.parameters.value
+            parameters = frame.parameters
             if length(parameters) > 0
                 for i = 1:length(parameters)
                     handle_setting!(connection, parameters[i][1], parameters[i][2])
                 end
             end
             put!(channel_act_raw,
-                 SettingsFrame(true, Nullable{Tuple{Frame.SETTING_IDENTIFIER, UInt32}}()))
+                 SettingsFrame(true, nothing))
         end
         return
     end

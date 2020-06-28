@@ -26,7 +26,7 @@ function encode_priority(frame)
                                  UInt8(frame.dependent_stream_identifier >> 16 & 0x000000ff);
                                  UInt8(frame.dependent_stream_identifier >> 8 & 0x000000ff);
                                  UInt8(frame.dependent_stream_identifier & 0x000000ff) ]
-    payload[1] = frame.exclusive ? (payload[1] | 0x80) : payload[1]
+    payload[1] = (!isnothing(frame.exclusive) && frame.exclusive) ? (payload[1] | 0x80) : payload[1]
     push!(payload, frame.weight)
 
     return wrap_payload(payload, PRIORITY, 0x0, frame.stream_identifier)
