@@ -1,2 +1,6 @@
 name = "HTTP2"
 uuid = "d274f558-d366-508a-a164-2611506323a4"
+
+[deps]
+HPack = "ac4eac4a-97af-5557-9a41-b7bc20405a4a"
+HttpCommon = "77172c1b-203f-54ac-aa54-3f1198fe9f90"
