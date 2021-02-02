@@ -147,7 +147,7 @@ function process_channel_act(connection::HTTPConnection)
 
     stream = get_stream(connection, act.stream_identifier)
     if stream.state == IDLE && !isnothing(connection.settings.max_concurrent_streams) &&
-        concurrent_streams_count(connection) > get(connection.settings.max_concurrent_streams)
+        concurrent_streams_count(connection) > connection.settings.max_concurrent_streams
         put!(channel_act, act)
         return
     end
@@ -160,7 +160,7 @@ function process_channel_act(connection::HTTPConnection)
                 sum += length(k) + length(act.headers[k]) + 32
             end
 
-            if sum > get(connection.settings.max_header_list_size)
+            if sum > connection.settings.max_header_list_size
                 goaway!(connection, InternalError("Header list size exceeded."))
                 return
             end
